@@ -3,8 +3,6 @@ import sys
 
 
 def normalize(filename):
-    """Normalize filename by transliterating cyrillic characters to latin
-    and replacing all non-alphanumeric characters with underscore."""
     # Визначаю словник для зіставлення кириличних символів із латинськими
     translit_map = {
         "А": "A",
