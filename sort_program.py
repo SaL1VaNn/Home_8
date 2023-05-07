@@ -87,9 +87,6 @@ def normalize(filename):
 
 
 def sort_files(directory):
-    """Sort files in the specified directory by extension and move them
-    to subdirectories corresponding to their extension. Rename files to a
-    normalized form using the normalize function."""
     # Створюю словник для зберігання розширень файлів і відповідних каталогів
     extensions = {
         "images": {"JPEG", "PNG", "JPG", "SVG"},
