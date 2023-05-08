@@ -98,25 +98,23 @@ def sort_files(directory):
     }
     directories = {category: f"{directory}/{category}" for category in extensions}
 
-    for file_or_folder in os.listdir(directory):
-        # Створюємо повний шлях до поточного файлу або папки
-        full_path = os.path.join(directory, file_or_folder)
-
-        # Якщо поточний об'єкт є папкою, то викликаємо цю ж функцію для цієї папки
-        if os.path.isdir(full_path):
+    # Рекурсивно викликаємо функцію для всіх підкаталогів
+    for filename in os.listdir(directory):
+        full_path = os.path.join(directory, filename)
+        if os.path.isdir(full_path) and not filename.startswith("."):
             sort_files(full_path)
         else:
             # Інакше, якщо це файл, то сортую його відповідно до розширення
-            extension = os.path.splitext(file_or_folder)[-1].lower()
+            extension = os.path.splitext(filename)[-1].lower()
             category = extensions.get(extension, "unknown")
 
             # Нормалізую назву файлу
-            normalized_name = normalize(file_or_folder)
+            normalized_name = normalize(filename)
 
             # Створюю папку для цієї категорії, якщо вона ще не існує
             category_path = os.path.join(directory, category)
-            if not os.path.exists(category_path):
-                os.mkdir(category_path)
+        if not os.path.exists(category_path):
+            os.mkdir(category_path)
 
             # Переміщую файл у відповідну категорію
             new_path = os.path.join(category_path, normalized_name)
