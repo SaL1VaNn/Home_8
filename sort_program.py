@@ -96,13 +96,11 @@ def sort_files(directory):
         "archives": {"ZIP", "GZ", "TAR"},
         "unknown": set(),
     }
-    directories = {
-        category: os.path.join(directory, category) for category in extensions
-    }
+    directories = {category: f"{directory}/{category}" for category in extensions}
 
     # Створюю підкаталоги, якщо вони не існують
-    for category, directory in directories.items():
-        os.makedirs(directory, exist_ok=True)
+    for category, sub_directory in directories.items():
+        os.makedirs(sub_directory, exist_ok=True)
 
     # Переглядаю всі файли в каталозі
     for filename in os.listdir(directory):
@@ -135,10 +133,12 @@ def sort_files(directory):
 
 if __name__ == "__main__":
     # Розбираю аргументи командного рядка
-    if len(sys.argv) != 2:
-        print(f"Usage: python {sys.argv[0]} <directory>")
-        sys.exit(1)
-    directory = sys.argv[1]
+    # if len(sys.argv) != 2:
+    #     print(f"Usage: python {sys.argv[0]} <directory>")
+    #     sys.exit(1)
+    # directory = sys.argv[1]
+
+    directory = "D:/trash"
 
     # Сортую файли у вказаному каталозі
     sort_files(directory)
