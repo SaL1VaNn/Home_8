@@ -98,37 +98,29 @@ def sort_files(directory):
     }
     directories = {category: f"{directory}/{category}" for category in extensions}
 
-    # Створюю підкаталоги, якщо вони не існують
-    for category, sub_directory in directories.items():
-        os.makedirs(sub_directory, exist_ok=True)
+    for file_or_folder in os.listdir(directory):
+        # Створюємо повний шлях до поточного файлу або папки
+        full_path = os.path.join(directory, file_or_folder)
 
-    # Переглядаю всі файли в каталозі
-    for filename in os.listdir(directory):
-        # Ігнорую каталоги та приховані файли
-        if os.path.isdir(os.path.join(directory, filename)) or filename.startswith("."):
-            continue
+        # Якщо поточний об'єкт є папкою, то викликаємо цю ж функцію для цієї папки
+        if os.path.isdir(full_path):
+            sort_files(full_path)
+        else:
+            # Інакше, якщо це файл, то сортую його відповідно до розширення
+            extension = os.path.splitext(file_or_folder)[-1].lower()
+            category = extensions.get(extension, "unknown")
 
-        # Тут я отримую розширення файлу
-        extension = filename.split(".")[-1].upper()
+            # Нормалізую назву файлу
+            normalized_name = normalize(file_or_folder)
 
-        # Шукаю категорію для цього розширення
-        found = False
-        for category, extensions_set in extensions.items():
-            if extension in extensions_set:
-                found = True
-                break
+            # Створюю папку для цієї категорії, якщо вона ще не існує
+            category_path = os.path.join(directory, category)
+            if not os.path.exists(category_path):
+                os.mkdir(category_path)
 
-        # Якщо розширення не знайдено в жодній категорії, признається йому "невідоме"
-        if not found:
-            category = "unknown"
-
-        # Нормалізується назву файлу
-        normalized_name = normalize(filename)
-
-        # Переміщаю файл у новий каталог
-        source_path = os.path.join(directory, filename)
-        target_path = os.path.join(directories[category], normalized_name)
-        os.rename(source_path, target_path)
+            # Переміщую файл у відповідну категорію
+            new_path = os.path.join(category_path, normalized_name)
+            os.rename(full_path, new_path)
 
 
 if __name__ == "__main__":
