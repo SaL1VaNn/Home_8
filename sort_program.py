@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 
 
 def normalize(filename):
@@ -72,6 +73,7 @@ def normalize(filename):
         "ю": "iu",
         "я": "ia",
     }
+
     # Перебираю кожен символ в назві файлу
     normalized_name = ""
     for char in filename:
@@ -87,7 +89,6 @@ def normalize(filename):
 
 
 def sort_files(directory):
-    # Створюю словник для зберігання розширень файлів і відповідних каталогів
     extensions = {
         "images": {"JPEG", "PNG", "JPG", "SVG"},
         "videos": {"AVI", "MP4", "MOV", "MKV"},
@@ -96,39 +97,30 @@ def sort_files(directory):
         "archives": {"ZIP", "GZ", "TAR"},
         "unknown": set(),
     }
-    directories = {category: f"{directory}/{category}" for category in extensions}
+    directories = {
+        category: os.path.join(directory, category) for category in extensions
+    }
 
-    # Рекурсивно викликаємо функцію для всіх підкаталогів
     for filename in os.listdir(directory):
-        full_path = os.path.join(directory, filename)
-        if os.path.isdir(full_path) and not filename.startswith("."):
-            sort_files(full_path)
-        else:
-            # Інакше, якщо це файл, то сортую його відповідно до розширення
-            extension = os.path.splitext(filename)[-1].lower()
-            category = extensions.get(extension, "unknown")
+        source_path = os.path.join(directory, filename)
+        if os.path.isdir(source_path):
+            sort_files(source_path)
+        elif os.path.isfile(source_path):
+            extension = filename.split(".")[-1].upper()
+            found = False
+            for category, extensions_set in extensions.items():
+                if extension in extensions_set:
+                    found = True
+                    break
 
-            # Нормалізую назву файлу
+            if not found:
+                category = "unknown"
+
             normalized_name = normalize(filename)
-
-            # Створюю папку для цієї категорії, якщо вона ще не існує
-            category_path = os.path.join(directory, category)
-        if not os.path.exists(category_path):
-            os.mkdir(category_path)
-
-            # Переміщую файл у відповідну категорію
-            new_path = os.path.join(category_path, normalized_name)
-            os.rename(full_path, new_path)
+            target_directory = directories[category]
+            target_path = os.path.join(target_directory, normalized_name)
+            shutil.move(source_path, target_path)
 
 
-if __name__ == "__main__":
-    # Розбираю аргументи командного рядка
-    # if len(sys.argv) != 2:
-    #     print(f"Usage: python {sys.argv[0]} <directory>")
-    #     sys.exit(1)
-    # directory = sys.argv[1]
-
-    directory = "D:/trash"
-
-    # Сортую файли у вказаному каталозі
-    sort_files(directory)
+directory = "D:/trash"
+sort_files(directory)
