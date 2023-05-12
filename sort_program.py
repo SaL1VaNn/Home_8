@@ -122,5 +122,8 @@ def sort_files(directory):
             shutil.move(source_path, target_path)
 
 
-directory = "D:/trash"
+# Отримую шлях до папки від користувача через консоль
+directory = input("Введіть шлях до папки, яку потрібно відсортувати: ")
+
+# Виклик функції для сортування файлів
 sort_files(directory)
